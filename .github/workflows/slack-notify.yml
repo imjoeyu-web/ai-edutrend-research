@@ -14,16 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get report info
-        id: report
-        run: |
-          FILE=$(git diff-tree --no-commit-id -r --name-only ${{ github.sha }} | grep reports/)
-          DATE=$(echo $FILE | grep -oP '\d{4}-\d{2}-\d{2}')
-          echo "file=$FILE" >> $GITHUB_OUTPUT
-          echo "date=$DATE" >> $GITHUB_OUTPUT
-
       - name: Send Slack notification
         run: |
+          DATE=$(date +%Y-%m-%d)
           curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\": \"*📚 AI 교육 트렌드 리포트 — ${{ steps.report.outputs.date }}*\n\n🔗 전체 리포트: https://github.com/imjoeyu-web/ai-edutrend-research/blob/main/reports/${{ steps.report.outputs.date }}.md\"}" \
+            --data "{\"text\": \"*📚 AI 교육 트렌드 리포트 — ${DATE}*\n\n🔗 전체 리포트: https://github.com/imjoeyu-web/ai-edutrend-research/blob/main/reports/${DATE}.md\"}" \
             ${{ secrets.SLACK_WEBHOOK_URL }}
